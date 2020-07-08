@@ -1,0 +1,156 @@
+<!--
+notes:
+
+1. you need to have a parent div of the element that needs scrolling. the scrollbar is put inside this parent div, but outside of the div that needs scrolling (the scrollbar is positioned as absolute and if it would be inside the div that needs scrolling, it would move with the content of the div as it is scrolled)
+2. the parent div, the div that needs scrolling, the scrollbar and the scroller piece needs to have an ID; you insert the IDs int he functions that you see in the html as shown below by the html example (the function that is run when the mouse is pressed on the scroller piece; the function that is run when the div that needs scrolling is scrolled with the mouse's scroll wheel)
+3. you can put the CSS in the " global.css " that you use for other pages in your website, and you can make a .js that ontains the javascript shown below-below and call it on every page you need this functionality. You can use multiple scrollbars on the same page, with the same functions (and imput the respective IDs in the functions called) 
+
+-->
+
+
+<!-- the HTML: -->
+
+<div id="parent_of_the_scrollable_div_1" class="made_up_scrollbar_parent">
+
+
+
+<div id="made_up_scrollbar_1" class="made_up_scrollbar"><div id="made_up_scroller_1"  onmousedown="mu_s_scroller_click_down('the_scrollable_div_1', 'made_up_scrollbar_1', 'made_up_scroller_1')"></div></div>
+
+
+
+
+<div id="the_scrollable_div_1" class="made_up_scrollbar_content_to_scroll"  onscroll="mu_s_container_onsscroll('the_scrollable_div_1', 'made_up_scrollbar_1', 'made_up_scroller_1')">bla bla bla...</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- the CSS: -->
+
+<style>
+
+.made_up_scrollbar {position: absolute;top: 5px;bottom: 5px;right: 0;width: 15px;z-index: 100;}
+.made_up_scrollbar div {width: 9px;/*height: 617.143px;*/background: rgba(255, 255, 255, 0.11);border-radius: 10px;margin-top: 0px;transition: opacity 0.15s ease-in /*, height 0.3s ease-in*/;opacity: 0;cursor: pointer;} /* scroller */
+.made_up_scrollbar_parent:hover .made_up_scrollbar div {opacity: 1 !important;}/* for scroller */
+.made_up_scrollbar_content_to_scroll::-webkit-scrollbar {width: 0;}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+<!-- the JAVASCRIPT code: -->
+
+<script>
+
+/*  mu_s   -   made_up_scrollbar  */
+var mu_s_container_to_scroll, mu_s_scrollbar, mu_s_scroller;
+
+
+var mu_s_content_scroll_value;
+var mu_s_scroller_timeout;
+
+
+function mu_s_resize_and_place_scrollbar() {
+    /* resize part */
+    mu_s_scroller.style.height = ( (mu_s_container_to_scroll.clientHeight / mu_s_container_to_scroll.scrollHeight) * mu_s_scrollbar.clientHeight ) + "px";
+
+    /* replace part */
+    mu_s_content_scroll_value = mu_s_container_to_scroll.scrollTop / (mu_s_container_to_scroll.scrollHeight - mu_s_container_to_scroll.clientHeight);
+    mu_s_scroller.style.marginTop = ( (mu_s_scrollbar.clientHeight - mu_s_scroller.clientHeight) * mu_s_content_scroll_value ) + "px";
+}
+
+
+
+function mu_s_show_and_hide_scrollbar() {
+    clearTimeout(mu_s_scroller_timeout);
+    mu_s_scroller.style.opacity = "1";
+    mu_s_scroller_timeout = setTimeout(() => {mu_s_scroller.style.opacity = "0.3";}, 875);
+}
+
+
+
+
+
+
+/* when you scroll with scrollwheel */ /* PUT THIS IN THE CONAINER THAT NEEDS TO BE SCROLLED - onscroll="" */
+function mu_s_container_onsscroll(mu_s_container_to_scroll_id, mu_s_scrollbar_id, mu_s_scroller_id) {
+
+    mu_s_container_to_scroll = document.getElementById(mu_s_container_to_scroll_id);
+    mu_s_scrollbar = document.getElementById(mu_s_scrollbar_id);
+    mu_s_scroller = document.getElementById(mu_s_scroller_id);
+
+
+
+    mu_s_show_and_hide_scrollbar();
+    mu_s_resize_and_place_scrollbar();
+}
+
+
+
+
+/* when you scroll by moving the scroller with the mouse; compared to the image picker, the scroller margin will be modified and not the top value */
+var mu_s_mouse_old_y, mu_s_mouse_new_y;
+var mu_s_scrollbar_scrolled; /* the fraction, not the percentage */
+
+
+/* PUT THIS ON THE SCROLLER - onmousedown="" */
+function mu_s_scroller_click_down(mu_s_container_to_scroll_id, mu_s_scrollbar_id, mu_s_scroller_id) {
+
+    event.preventDefault();
+
+
+    mu_s_container_to_scroll = document.getElementById(mu_s_container_to_scroll_id);
+    mu_s_scrollbar = document.getElementById(mu_s_scrollbar_id);
+    mu_s_scroller = document.getElementById(mu_s_scroller_id);
+
+
+
+    mu_s_mouse_old_y = event.clientY;
+    
+    document.onmouseup = function() {document.onmouseup = null;document.onmousemove = null;};
+
+    document.onmousemove = function() {
+
+
+        mu_s_show_and_hide_scrollbar(mu_s_scroller);
+
+
+
+        mu_s_mouse_new_y = parseInt(mu_s_scroller.style.marginTop, 10) + event.clientY - mu_s_mouse_old_y;
+
+        if( mu_s_mouse_new_y >= 0 && mu_s_mouse_new_y <= (mu_s_scrollbar.clientHeight - mu_s_scroller.clientHeight) ) {mu_s_scroller.style.marginTop = mu_s_mouse_new_y + "px";}
+
+
+
+        mu_s_scrollbar_scrolled = parseInt(mu_s_scroller.style.marginTop, 10) / (mu_s_scrollbar.clientHeight - mu_s_scroller.clientHeight);
+
+        mu_s_container_to_scroll.scrollTop = ( (mu_s_container_to_scroll.scrollHeight - mu_s_container_to_scroll.clientHeight) * mu_s_scrollbar_scrolled );
+
+
+
+        mu_s_mouse_old_y = event.clientY;
+    };
+
+};
+
+
+</script>

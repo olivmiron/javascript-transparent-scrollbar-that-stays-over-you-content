@@ -1,0 +1,16 @@
+
+<!-- the HTML scheme: -->
+
+<div id="parent_of_the_scrollable_div_1" class="made_up_scrollbar_parent">
+
+
+
+<div id="made_up_scrollbar_1" class="made_up_scrollbar"><div id="made_up_scroller_1"  onmousedown="mu_s_scroller_click_down('the_scrollable_div_1', 'made_up_scrollbar_1', 'made_up_scroller_1')"></div></div>
+
+
+
+
+<div id="the_scrollable_div_1" class="made_up_scrollbar_content_to_scroll"  onscroll="mu_s_container_onsscroll('the_scrollable_div_1', 'made_up_scrollbar_1', 'made_up_scroller_1')">bla bla bla...</div>
+
+
+</div>
